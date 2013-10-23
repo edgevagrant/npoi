@@ -10,6 +10,9 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Xml.Serialization;
 using NPOI.OpenXmlFormats.Dml;
+using System.Xml;
+using System.IO;
+using NPOI.OpenXml4Net.Util;
 
 
 namespace NPOI.OpenXmlFormats.Spreadsheet
@@ -191,6 +194,31 @@ namespace NPOI.OpenXmlFormats.Spreadsheet
             get { return (null != uriField); }
         }
 
+        public static CT_Extension Parse(XmlNode node, XmlNamespaceManager namespaceManager)
+        {
+            if (node == null)
+                return null;
+            CT_Extension ctObj = new CT_Extension();
+            ctObj.uri = XmlHelper.ReadString(node.Attributes["uri"]);
+            //foreach (XmlNode childNode in node.ChildNodes)
+            //{
+            //    if (childNode.LocalName == "Any")
+            //        ctObj.Any = XmlElement.Parse(childNode, namespaceManager);
+            //}
+            return ctObj;
+        }
+
+
+
+        internal void Write(StreamWriter sw, string nodeName)
+        {
+            sw.Write(string.Format("<{0}", nodeName));
+            XmlHelper.WriteAttribute(sw, "uri", this.uri);
+            sw.Write(">");
+            //if (this.Any != null)
+            //    this.Any.Write(sw, "Any");
+            sw.Write(string.Format("</{0}>", nodeName));
+        }
     }
 
     [Serializable]
@@ -221,5 +249,36 @@ namespace NPOI.OpenXmlFormats.Spreadsheet
                 this.extField = value;
             }
         }
+
+        public static CT_ExtensionList Parse(XmlNode node, XmlNamespaceManager namespaceManager)
+        {
+            if (node == null)
+                return null;
+            CT_ExtensionList ctObj = new CT_ExtensionList();
+            ctObj.ext = new List<CT_Extension>();
+            foreach (XmlNode childNode in node.ChildNodes)
+            {
+                if (childNode.LocalName == "ext")
+                    ctObj.ext.Add(CT_Extension.Parse(childNode, namespaceManager));
+            }
+            return ctObj;
+        }
+
+
+
+        internal void Write(StreamWriter sw, string nodeName)
+        {
+            sw.Write(string.Format("<{0}", nodeName));
+            sw.Write(">");
+            if (this.ext != null)
+            {
+                foreach (CT_Extension x in this.ext)
+                {
+                    x.Write(sw, "ext");
+                }
+            }
+            sw.Write(string.Format("</{0}>", nodeName));
+        }
+
     }
 }

@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Xml;
 using System.Xml.Serialization;
+using NPOI.OpenXml4Net.Util;
 
 namespace NPOI.OpenXmlFormats.Spreadsheet
 {
@@ -782,6 +783,33 @@ namespace NPOI.OpenXmlFormats.Spreadsheet
                 return stringWriter.ToString();
             }
         }
+
+        public static CT_Color Parse(XmlNode node, XmlNamespaceManager namespaceManager)
+        {
+            if (node == null)
+                return null;
+            CT_Color ctObj = new CT_Color();
+            ctObj.auto = XmlHelper.ReadBool(node.Attributes["auto"]);
+            ctObj.indexed = XmlHelper.ReadUInt(node.Attributes["indexed"]);
+            ctObj.rgb = XmlHelper.ReadBytes(node.Attributes["rgb"]);
+            ctObj.theme = XmlHelper.ReadUInt(node.Attributes["theme"]);
+            return ctObj;
+        }
+
+
+
+        internal void Write(StreamWriter sw, string nodeName)
+        {
+            sw.Write(string.Format("<{0}", nodeName));
+            XmlHelper.WriteAttribute(sw, "auto", this.auto);
+            XmlHelper.WriteAttribute(sw, "indexed", this.indexed);
+            XmlHelper.WriteAttribute(sw, "rgb", this.rgb);
+            XmlHelper.WriteAttribute(sw, "theme", this.theme);
+            XmlHelper.WriteAttribute(sw, "tint", this.tint);
+            sw.Write(">");
+            sw.Write(string.Format("</{0}>", nodeName));
+        }
+
 
     }
 

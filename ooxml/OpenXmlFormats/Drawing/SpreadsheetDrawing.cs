@@ -521,6 +521,25 @@ namespace NPOI.OpenXmlFormats.Dml.Spreadsheet
                 this.idField = value;
             }
         }
+
+        public static CT_LegacyDrawing Parse(XmlNode node, XmlNamespaceManager namespaceManager)
+        {
+            if (node == null)
+                return null;
+            CT_LegacyDrawing ctObj = new CT_LegacyDrawing();
+            ctObj.id = XmlHelper.ReadString(node.Attributes["id"]);
+            return ctObj;
+        }
+
+        
+        internal void Write(StreamWriter sw, string nodeName)
+        {
+            sw.Write(string.Format("<{0}", nodeName));
+            XmlHelper.WriteAttribute(sw, "r:id", this.id);
+            sw.Write(">");
+            sw.Write(string.Format("</{0}>", nodeName));
+        }
+
     }
     [XmlType(Namespace = "http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing")]
     public class CT_OneCellAnchor: IEG_Anchor
